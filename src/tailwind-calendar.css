@@ -1,0 +1,30 @@
+.custom-calendar {
+    border: 2px solid green;
+    border-radius: 8px;
+    padding: 10px;
+    width: 300px;
+    background-color: white;
+  }
+  
+  .react-calendar__navigation {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 10px;
+  }
+  
+  .react-calendar__tile {
+    border-radius: 4px;
+    padding: 10px;
+    text-align: center;
+    color: green;
+  }
+  
+  .react-calendar__tile--active {
+    background-color: green;
+    color: white;
+  }
+  
+  .react-calendar__tile:hover {
+    background-color: lightgreen;
+  }
+  
