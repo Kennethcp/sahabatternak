@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { format } from 'date-fns';
-import DatePicker from "./DatePicker"; // Import komponen DatePicker Anda
-import { supabase } from "../lib/supabaseClient"; // Pastikan impor ini benar
+import DatePicker from "./DatePicker";
+import { supabase } from "../lib/supabaseClient";
 
 const DataTable = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -9,33 +9,36 @@ const DataTable = () => {
   const [data, setData] = useState([]);
 
   useEffect(() => {
-  const fetchDataForDate = async (date) => {
-    try {
-      const formattedDate = format(date, 'yyyy-MM-dd');
-      console.log('Fetching data for date:', formattedDate); // Log tanggal yang diformat
-      const { data: fetchedData, error } = await supabase
-        .from('data_entries')
-        .select('*')
-        .eq('tanggal', formattedDate);
+    const fetchDataForDate = async (date) => {
+      try {
+        const formattedDate = format(date, 'yyyy-MM-dd');
+        console.log('Fetching data for date:', formattedDate);
+        const { data: fetchedData, error } = await supabase
+          .from('data_entries')
+          .select('*')
+          .eq('tanggal', formattedDate);
 
-      if (error) {
-        console.error('Error fetching data:', error);
-      } else {
-        console.log('Data fetched:', fetchedData); // Log data yang diambil
-        setData(fetchedData || []);
+        if (error) {
+          console.error('Error fetching data:', error);
+        } else {
+          console.log('Data fetched:', fetchedData);
+          setData(fetchedData || []);
+        }
+      } catch (error) {
+        console.error('Error:', error);
       }
-    } catch (error) {
-      console.error('Error:', error);
-    }
-  };
+    };
 
-  fetchDataForDate(selectedDate);
-}, [selectedDate]);
-
+    fetchDataForDate(selectedDate);
+  }, [selectedDate]);
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
-    setIsDatePickerOpen(false); // Tutup DatePicker setelah pemilihan tanggal
+    setIsDatePickerOpen(false);
+  };
+
+  const addData = (newData) => {
+    setData((prevData) => [...prevData, newData]);
   };
 
   return (
@@ -59,12 +62,11 @@ const DataTable = () => {
         </button>
       </div>
 
-      {/* Komponen DatePicker */}
       {isDatePickerOpen && (
         <DatePicker
           selectedDate={selectedDate}
           onDateSelect={handleDateChange}
-          onClose={() => setIsDatePickerOpen(false)} // Tutup overlay
+          onClose={() => setIsDatePickerOpen(false)}
         />
       )}
 

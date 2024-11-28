@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import { supabase } from "../lib/supabaseClient"; // Import the initialized Supabase client
+import { supabase } from "../lib/supabaseClient";
+import { parse, format, isValid } from 'date-fns';
 
 const InputForm = ({ addData }) => {
   const [formData, setFormData] = useState({
@@ -8,7 +9,7 @@ const InputForm = ({ addData }) => {
     jumlah: "",
     tanggal: "",
     pukul: "",
-    kualitas: "OK", // Default quality value
+    kualitas: "OK", // Default value
   });
 
   const handleChange = (e) => {
@@ -19,21 +20,35 @@ const InputForm = ({ addData }) => {
     e.preventDefault();
 
     if (Object.values(formData).every((field) => field.trim() !== "")) {
-      const updatedData = { ...formData, status };
+      console.log("Tanggal sebelum parsing:", formData.tanggal);
+
+      const parsedDate = parse(formData.tanggal, 'dd/MM/yyyy', new Date());
+
+      if (!isValid(parsedDate)) {
+        console.error("Tanggal tidak valid");
+        alert("Format tanggal harus dd/MM/yyyy. Silakan periksa kembali.");
+        return;
+      }
+
+      const formattedDate = format(parsedDate, 'yyyy-MM-dd');
+
+      const updatedData = { ...formData, tanggal: formattedDate, kualitas: status };
 
       try {
-        // Insert data directly into Supabase table
         const { data, error } = await supabase
-          .from("data_entries") // Replace with your table name
+          .from("data_entries")
           .insert([updatedData]);
 
         if (error) {
-          throw new Error(error.message);
+          console.error("Error inserting data:", error.message);
+          alert("Terjadi kesalahan saat mengirim data.");
+          return;
         }
 
-        console.log("Data submitted:", data);
+        if (data && data.length > 0) {
+          addData(data[0]);
+        }
 
-        // Reset form after successful submission
         setFormData({
           kode: "",
           supplier: "",
@@ -42,11 +57,11 @@ const InputForm = ({ addData }) => {
           pukul: "",
           kualitas: "OK",
         });
-
-        // Notify parent component
-        addData(updatedData);
+        
+        console.log("Data submitted:", data);
       } catch (error) {
         console.error("Error submitting data:", error.message);
+        alert("Terjadi kesalahan saat mengirim data.");
       }
     }
   };
@@ -73,7 +88,7 @@ const InputForm = ({ addData }) => {
         <input
           id="pukul"
           name="pukul"
-          type="time" // Change input type to "time"
+          type="time"
           value={formData.pukul}
           onChange={handleChange}
           className="w-full border border-darkgreen rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-green-400 placeholder:text-darkgreen font-poppins text-center font-semibold"
@@ -82,14 +97,14 @@ const InputForm = ({ addData }) => {
       </div>
       <button
         type="button"
-        onClick={(e) => handleSubmit(e, "OK")} // Pass "OK" status
+        onClick={(e) => handleSubmit(e, "OK")}
         className="w-full bg-darkgreen text-white rounded-2xl py-2 mt-4 hover:bg-darkgreen hover:opacity-80 font-semibold font-poppins"
       >
         Accept
       </button>
       <button
         type="button"
-        onClick={(e) => handleSubmit(e, "Rejected")} // Pass "Rejected" status
+        onClick={(e) => handleSubmit(e, "Rejected")}
         className="w-full bg-red text-white rounded-2xl py-2 mt-4 font-semibold font-poppins"
       >
         Reject

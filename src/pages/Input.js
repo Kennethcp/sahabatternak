@@ -17,6 +17,7 @@ const Input = () => {
         if (error) throw error;
   
         setData(fetchedData || []);
+        updateTotals(fetchedData || []);
       } catch (err) {
         console.error("Error fetching data:", err.message);
       }
@@ -24,7 +25,19 @@ const Input = () => {
   
     fetchData();
   }, []);
-  
+
+  const updateTotals = (data) => {
+    const accepted = data
+      .filter(item => item.kualitas === "OK")
+      .reduce((total, item) => total + parseInt(item.jumlah, 10), 0);
+
+    const rejected = data
+      .filter(item => item.kualitas === "Rejected")
+      .reduce((total, item) => total + parseInt(item.jumlah, 10), 0);
+
+    setTotalAccepted(accepted);
+    setTotalRejected(rejected);
+  };
 
   const addData = async (newData) => {
     try {
@@ -32,20 +45,16 @@ const Input = () => {
   
       if (error) throw error;
   
-      // Add the new data to the state
-      setData((prevData) => [...prevData, addedData[0]]);
+      // Tambahkan data baru ke state
+      const updatedData = [...data, addedData[0]];
+      setData(updatedData);
   
-      // Update totals
-      if (newData.status === "OK") {
-        setTotalAccepted((prevTotal) => prevTotal + parseInt(newData.jumlah, 10));
-      } else if (newData.status === "Rejected") {
-        setTotalRejected((prevTotal) => prevTotal + parseInt(newData.jumlah, 10));
-      }
+      // Perbarui total
+      updateTotals(updatedData);
     } catch (error) {
       console.error("Error adding data:", error.message);
     }
   };
-  
 
   return (
     <div className="min-h-screen flex flex-col items-center">
