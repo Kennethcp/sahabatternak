@@ -82,7 +82,9 @@ const DataTable = () => {
         </thead>
         <tbody>
           {data.length > 0 ? (
-            data.map((item, index) => (
+            data
+            .filter(item => item.nama_pekerja == null && item.pukul !== null)
+            .map((item, index) => (
               <tr
                 key={index}
                 className="text-center even:bg-white odd:bg-lightgrey"
