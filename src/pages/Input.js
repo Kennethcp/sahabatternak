@@ -29,11 +29,11 @@ const Input = () => {
 
   const updateTotals = (data) => {
     const accepted = data
-      .filter(item => item.kualitas === "OK")
+      .filter(item => item.kualitas === "OK" && item.nama_pekerja == null && item.pukul !== null)
       .reduce((total, item) => total + parseInt(item.jumlah, 10), 0);
 
     const rejected = data
-      .filter(item => item.kualitas === "Rejected")
+      .filter(item => item.kualitas === "Rejected" && item.nama_pekerja == null && item.pukul !== null)
       .reduce((total, item) => total + parseInt(item.jumlah, 10), 0);
 
     setTotalAccepted(accepted);
