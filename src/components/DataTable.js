@@ -1,13 +1,41 @@
-import React, { useState } from "react";
-import DatePicker from "./DatePicker"; // Import your custom DatePicker component
+import React, { useState, useEffect } from "react";
+import { format } from 'date-fns';
+import DatePicker from "./DatePicker"; // Import komponen DatePicker Anda
+import { supabase } from "../lib/supabaseClient"; // Pastikan impor ini benar
 
-const DataTable = ({ data }) => {
+const DataTable = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+  const fetchDataForDate = async (date) => {
+    try {
+      const formattedDate = format(date, 'yyyy-MM-dd');
+      console.log('Fetching data for date:', formattedDate); // Log tanggal yang diformat
+      const { data: fetchedData, error } = await supabase
+        .from('data_entries')
+        .select('*')
+        .eq('tanggal', formattedDate);
+
+      if (error) {
+        console.error('Error fetching data:', error);
+      } else {
+        console.log('Data fetched:', fetchedData); // Log data yang diambil
+        setData(fetchedData || []);
+      }
+    } catch (error) {
+      console.error('Error:', error);
+    }
+  };
+
+  fetchDataForDate(selectedDate);
+}, [selectedDate]);
+
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
-    setIsDatePickerOpen(false); // Close the DatePicker after date selection
+    setIsDatePickerOpen(false); // Tutup DatePicker setelah pemilihan tanggal
   };
 
   return (
@@ -31,15 +59,14 @@ const DataTable = ({ data }) => {
         </button>
       </div>
 
-      {/* Custom DatePicker Component */}
+      {/* Komponen DatePicker */}
       {isDatePickerOpen && (
         <DatePicker
           selectedDate={selectedDate}
           onDateSelect={handleDateChange}
-          onClose={() => setIsDatePickerOpen(false)} // Close the overlay
+          onClose={() => setIsDatePickerOpen(false)} // Tutup overlay
         />
       )}
-      
 
       <table className="w-full border-collapse font-semibold border font-poppins text-greentext">
         <thead>
