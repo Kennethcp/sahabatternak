@@ -1,12 +1,38 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DataTable from "../components/DataTableOutput";
 import Header from "../components/Header";
 import OutputForm from "../components/OutputForm.js";
+import { supabase } from "../lib/supabaseClient";
 
 const Output = () => {
   const [data, setData] = useState([]);
   const [totalDiolah, setTotalDiolah] = useState(0);
   const [showForm, setShowForm] = useState(false);
+
+  // Fetch isi tabel
+  useEffect(() => {
+    const fetchData = async () => {
+      try {
+        const { data: fetchedData, error } = await supabase.from("data_entries").select("*");
+        if (error) throw error;
+
+        // Filter data untuk hanya menyertakan entri dengan nama_pekerja yang tidak null
+        const filteredData = (fetchedData || []).filter(item => item.nama_pekerja !== null);
+
+        setData(filteredData);
+
+        // Calculate total jumlah
+        const total = filteredData.reduce((sum, item) => sum + (parseInt(item.jumlah, 10) || 0), 0);
+        setTotalDiolah(total);
+
+        console.log(filteredData);
+      } catch (err) {
+        console.error("Error fetching data:", err.message);
+      }
+    };
+
+    fetchData();
+  }, []);
 
   const characters = [
     { id: 1, name: "Ibu Supriman" },

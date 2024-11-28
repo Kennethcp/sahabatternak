@@ -1,11 +1,17 @@
 import React, { useState } from "react";
+import { supabase } from "../lib/supabaseClient";
+import { parse, format, isValid } from 'date-fns';
 import avatar from "../assets/logo_ibu.svg";
 
 const OutputForm = ({ onSubmit, closeForm }) => {
+  const todayDate = format(new Date(), 'yyyy-MM-dd');
   const [selectedCharacter, setSelectedCharacter] = useState(null);
   const [formData, setFormData] = useState({
     supplier: "",
     jumlah: "",
+    tanggal: todayDate,
+    kode: null,
+    nama_pekerja: null,
   });
 
   const characters = [
@@ -14,25 +20,54 @@ const OutputForm = ({ onSubmit, closeForm }) => {
     { id: 3, name: "Mbak Yanto", image: avatar },
   ];
 
-  const handleInputChange = (e) => {
-    const { id, value } = e.target;
-    setFormData((prevData) => ({ ...prevData, [id]: value }));
+  const handleCharacterSelect = (characterId, name) => {
+    setSelectedCharacter(characterId);
+    setFormData((prevData) => ({
+      ...prevData,
+      kode: characterId, // Simpan ID karakter
+      nama_pekerja: name // Simpan nama pekerja
+    }));
   };
 
-  const handleSubmit = (e) => {
+  const handleChange = (e) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSubmit = async (e, status) => {
     e.preventDefault();
+
+    // Validasi: Pastikan semua field diisi
     if (selectedCharacter && formData.supplier && formData.jumlah) {
-      const newRow = {
-        kode: selectedCharacter,
-        pukul: new Date().toLocaleTimeString(),
-        nama: characters.find((c) => c.id === selectedCharacter).name,
-        supplier: formData.supplier,
-        jumlah: formData.jumlah,
-        kualitas: formData.kualitas || "Baik", // Default value if not filled
+      const updatedData = {
+        ...formData,
+        kualitas: status, // Set kualitas berdasarkan tombol yang diklik
+        pukul: new Date().toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }), // Ambil waktu saat ini
       };
-      onSubmit(newRow);
-      setFormData({ supplier: "", jumlah: "", kualitas: "" });
-      setSelectedCharacter(null);
+
+      try {
+        const { data, error } = await supabase
+          .from("data_entries")
+          .insert([updatedData]);
+
+        if (error) {
+          console.error("Error inserting data:", error.message);
+          alert("Terjadi kesalahan saat mengirim data.");
+          return;
+        }
+
+        if (data && data.length > 0) {
+          onSubmit(data[0]); // Gunakan data yang dikembalikan dari Supabase
+        }
+
+        console.log("Data submitted:", data);
+        alert("Data berhasil disimpan!");
+        closeForm();
+      } catch (error) {
+        console.error("Error submitting data:", error.message);
+        alert("Terjadi kesalahan saat mengirim data.");
+      }
+    } else {
+      alert("Semua field harus diisi!");
     }
   };
 
@@ -49,7 +84,7 @@ const OutputForm = ({ onSubmit, closeForm }) => {
               <button
                 key={character.id}
                 type="button"
-                onClick={() => setSelectedCharacter(character.id)}
+                onClick={() => handleCharacterSelect(character.id, character.name)} // Tambahkan nama
                 className={`flex flex-col items-center border-2 rounded-lg p-4 ${
                   selectedCharacter === character.id
                     ? "border-darkgreen bg-opacity-20"
@@ -76,9 +111,10 @@ const OutputForm = ({ onSubmit, closeForm }) => {
           </label>
           <input
             id="supplier"
+            name="supplier"
             type="text"
             value={formData.supplier}
-            onChange={handleInputChange}
+            onChange={handleChange}
             className="flex-1 rounded-lg border border-darkgreen py-2 px-3 text-darkgreen shadow-sm focus:border-greentext focus:ring-greentext"
           />
         </div>
@@ -92,26 +128,26 @@ const OutputForm = ({ onSubmit, closeForm }) => {
           </label>
           <input
             id="jumlah"
+            name="jumlah"
             type="number"
             value={formData.jumlah}
-            onChange={handleInputChange}
+            onChange={handleChange}
             className="flex-1 rounded-lg border border-darkgreen py-2 px-3 text-darkgreen shadow-sm focus:border-greentext focus:ring-greentext"
           />
         </div>
 
-
         <div className="flex justify-between space-x-4">
           <button
-            type="submit"
+            type="button"
+            onClick={(e) => handleSubmit(e, "OK")} // Pass "OK" status
             className="w-1/2 bg-darkgreen text-white font-semibold py-2 px-4 rounded-[18px] hover:bg-green-700"
-            disabled={!selectedCharacter || !formData.supplier || !formData.jumlah}
           >
             Input
           </button>
           <button
             type="button"
-            className="w-1/2 bg-redbutton text-white font-semibold py-2 px-4 rounded-[18px] hover:bg-red-700"
-            onClick={closeForm}
+            onClick={(e) => handleSubmit(e, "Rejected")} // Pass "Rejected" status
+            className="w-1/2 bg-red text-white font-semibold py-2 px-4 rounded-[18px] hover:bg-red-700"
           >
             Reject
           </button>

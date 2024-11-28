@@ -10,6 +10,7 @@ const Input = () => {
   const [totalRejected, setTotalRejected] = useState(0);
   const [showForm, setShowForm] = useState(false);
 
+  // Fetch isi tabel
   useEffect(() => {
     const fetchData = async () => {
       try {

@@ -66,7 +66,7 @@ const DataTableOutput = ({ data }) => {
                 <td className="border-darkgreen p-2 border-2">{item.kode}</td>
                 <td className="border-darkgreen p-2 border-2">{item.pukul}</td>
                 <td className="border-darkgreen p-2 border-2">
-                  {item.nama}
+                  {item.nama_pekerja}
                 </td>
                 <td className="border-darkgreen p-2 border-2">{item.supplier}</td>
                 <td className="border-darkgreen p-2 border-2">
