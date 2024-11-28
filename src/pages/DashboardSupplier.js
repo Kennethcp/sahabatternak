@@ -5,17 +5,13 @@ import { format } from "date-fns";
 import DatePicker from "../components/DatePicker";
 
 const DashboardSupplier = () => {
-  const stats = [
-    { label: "Jumlah Susu Diolah", value: "300", unit: "liter" },
-    { label: "Hasil Produksi", value: "155.4", unit: "kg" },
-    { label: "Rata-rata Conversion Rate", value: "0.518", unit: "kg/l" },
-  ];
 
+  
   const [startDate, setStartDate] = useState(new Date(2024, 10, 11)); // Default: 11 November 2024
   const [endDate, setEndDate] = useState(new Date(2024, 10, 12)); // Default: 12 November 2024
   const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState(false);
   const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState(false);
-
+  
   const suppliers = [
     {
       rank: 1,
@@ -45,6 +41,20 @@ const DashboardSupplier = () => {
   ];
 
   const [hoveredSupplier, setHoveredSupplier] = useState(null);
+  const calculateStats = (suppliers) => {
+    const totalLiter = suppliers.reduce((sum, supplier) => sum + parseFloat(supplier.detail.liter), 0);
+    const totalHasil = suppliers.reduce((sum, supplier) => sum + parseFloat(supplier.detail.hasil), 0);
+    const avgRate = suppliers.reduce((sum, supplier) => sum + parseFloat(supplier.detail.rate), 0) / suppliers.length;
+  
+    return [
+      { label: "Jumlah Susu Diolah", value: totalLiter.toFixed(0), unit: "liter" },
+      { label: "Hasil Produksi", value: totalHasil.toFixed(2), unit: "kg" },
+      { label: "Rata-rata Conversion Rate", value: avgRate.toFixed(3), unit: "kg/l" },
+    ];
+  };
+  
+  // Recalculate stats
+  const stats = calculateStats(suppliers);
 
   return (
     <div>
