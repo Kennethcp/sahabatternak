@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import logo from "../assets/logo.svg";
-import graph from "../assets/Graph.svg";
+import graph from "../assets/graph_supplier.svg";
 import { format } from "date-fns";
 import DatePicker from "../components/DatePicker";
 
@@ -117,7 +117,7 @@ const DashboardSupplier = () => {
       </div>
 
       {/* Main Content */}
-      <div className="container mx-auto p-6 grid grid-cols-1 lg:grid-cols-5 gap-6 mt-16">
+      <div className="container mx-auto p-6 grid grid-cols-1 lg:grid-cols-5 gap-6">
         {/* Left Section: Chart */}
         <div className="col-span-3 bg-white p-6 rounded-lg">
           <div className="rounded-lg flex items-center justify-center">
@@ -126,8 +126,8 @@ const DashboardSupplier = () => {
         </div>
 
         {/* Right Section: Top Suppliers and Stats */}
-        <div className="col-span-2 bg-white p-6 rounded-lg relative">
-          <h2 className="text-lg font-bold font-poppins rounded-xl text-white py-[7px] bg-darkgreen mb-4 text-center">
+        <div className="col-span-2 bg-white p-6 rounded-xl relative">
+          <h2 className="text-3xl font-bold font-poppins rounded-[14px] text-white py-[7px] bg-darkgreen mb-4 text-center">
             Top Supplier
           </h2>
           <ul className="space-y-4 relative">
@@ -183,11 +183,13 @@ const DashboardSupplier = () => {
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="w-full max-w-md bg-white border-2 border-darkgreen rounded-lg p-6 text-center shadow-md"
+                className="w-full max-w-md bg-white border-2 border-darkgreen rounded-[21px] p-6 text-center shadow-md relative"
               >
-                <p className="text-greentext font-medium text-[14px]">{stat.label}</p>
-                <p className="text-greentext font-bold text-6xl mt-2">
-                  {stat.value} <span className="text-3xl font-medium">{stat.unit}</span>
+                <p className="text-greentext font-medium  font-poppins text-[14px] absolute top-[12px] left-1/2 transform -translate-x-1/2">
+                  {stat.label}
+                </p>
+                <p className="text-greentext font-bold font-poppins text-6xl mt-4">
+                  {stat.value} <span className="text-3xl font-medium font-poppins">{stat.unit}</span>
                 </p>
               </div>
             ))}

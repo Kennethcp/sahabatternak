@@ -6,11 +6,7 @@ import DatePicker from "../components/DatePicker";
 
 
 const DashboardWorker = () => {
-  const stats = [
-    { label: "Jumlah Susu Diolah", value: "300", unit: "liter" },
-    { label: "Hasil Produksi", value: "155.4", unit: "kg" },
-    { label: "Rata-rata Conversion Rate", value: "0.518", unit: "kg/l" },
-  ];
+
     const [startDate, setStartDate] = useState(new Date(2024, 10, 11)); // Default: 11 November 2024
     const [endDate, setEndDate] = useState(new Date(2024, 10, 12)); // Default: 12 November 2024
     const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState(false);
@@ -45,6 +41,20 @@ const DashboardWorker = () => {
   ];
 
   const [hoveredSupplier, setHoveredSupplier] = useState(null);
+  const calculateStats = (suppliers) => {
+    const totalLiter = suppliers.reduce((sum, supplier) => sum + parseFloat(supplier.detail.liter), 0);
+    const totalHasil = suppliers.reduce((sum, supplier) => sum + parseFloat(supplier.detail.hasil), 0);
+    const avgRate = suppliers.reduce((sum, supplier) => sum + parseFloat(supplier.detail.rate), 0) / suppliers.length;
+  
+    return [
+      { label: "Jumlah Susu Diolah", value: totalLiter.toFixed(0), unit: "liter" },
+      { label: "Hasil Produksi", value: totalHasil.toFixed(2), unit: "kg" },
+      { label: "Rata-rata Conversion Rate", value: avgRate.toFixed(3), unit: "kg/l" },
+    ];
+  };
+  
+  // Recalculate stats
+  const stats = calculateStats(suppliers);
 
   return (
     <div>
@@ -117,7 +127,7 @@ const DashboardWorker = () => {
 
         {/* Right Section: Top Suppliers and Stats */}
         <div className="col-span-2 bg-white p-6 rounded-lg relative">
-          <h2 className="text-lg font-bold font-poppins rounded-xl text-white py-[7px] bg-darkgreen mb-4 text-center">
+          <h2 className="text-3xl font-bold font-poppins rounded-xl text-white py-[7px] bg-darkgreen mb-4 text-center">
             Top Worker
           </h2>
           <ul className="space-y-4 relative">
@@ -173,11 +183,13 @@ const DashboardWorker = () => {
             {stats.map((stat, index) => (
               <div
                 key={index}
-                className="w-full max-w-md bg-white border-2 border-darkgreen rounded-lg p-6 text-center shadow-md"
+                className="w-full max-w-md bg-white border-2 border-darkgreen rounded-[21px] p-6 text-center shadow-md relative"
               >
-                <p className="text-greentext font-medium text-[14px]">{stat.label}</p>
-                <p className="text-greentext font-bold text-6xl mt-2">
-                  {stat.value} <span className="text-3xl font-medium">{stat.unit}</span>
+                <p className="text-greentext font-medium  font-poppins text-[14px] absolute top-[12px] left-1/2 transform -translate-x-1/2">
+                  {stat.label}
+                </p>
+                <p className="text-greentext font-bold font-poppins text-6xl mt-4">
+                  {stat.value} <span className="text-3xl font-medium font-poppins">{stat.unit}</span>
                 </p>
               </div>
             ))}

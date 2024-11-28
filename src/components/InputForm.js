@@ -12,6 +12,20 @@ const InputForm = ({ addData }) => {
     kualitas: "OK", // Default value
   });
 
+  const handleDateInput = (e) => {
+    const value = e.target.value.replace(/[^\d]/g, ""); // Hapus karakter non-angka
+    let formattedValue = value;
+  
+    // Tambahkan "/" secara otomatis
+    if (value.length >= 3 && value.length <= 4) {
+      formattedValue = `${value.slice(0, 2)}/${value.slice(2)}`;
+    } else if (value.length > 4) {
+      formattedValue = `${value.slice(0, 2)}/${value.slice(2, 4)}/${value.slice(4, 8)}`;
+    }
+  
+    setFormData({ ...formData, tanggal: formattedValue });
+  };
+
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
@@ -70,44 +84,86 @@ const InputForm = ({ addData }) => {
 
   return (
     <form className="w-full max-w-md bg-white p-6">
-      {["kode", "supplier", "jumlah", "tanggal"].map((field) => (
-        <div key={field} className="mb-4">
+      {["kode", "supplier", "jumlah"].map((field) => (
+        <div key={field} className="relative mb-6">
+          {/* Input Field */}
           <input
             id={field}
             name={field}
             type="text"
             value={formData[field]}
             onChange={handleChange}
-            placeholder={capitalize(field)}
-            className="w-full border border-darkgreen rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-green-400 placeholder:text-darkgreen font-poppins text-center font-semibold"
+            className="peer w-full border-2 border-darkgreen rounded-xl p-4 pt-6 focus:outline-none focus:ring-2 focus:ring-darkgreen text-green-900 placeholder:opacity-0 font-poppins font-semibold"
+            placeholder={field.toUpperCase()}
             required
           />
+          {/* Floating Label */}
+          <label
+            htmlFor={field}
+            className="absolute left-4 top-0 text-darkgreen text-sm font-extrabold font-poppins transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-base  peer-focus:top-2 peer-focus:text-sm peer-focus:text-green-700"
+          >
+            {field.toUpperCase()}
+          </label>
         </div>
       ))}
-      <div className="mb-4">
+
+      {/* Tanggal Field */}
+      <div className="relative mb-6">
+        <input
+          id="tanggal"
+          name="tanggal"
+          type="text"
+          value={formData.tanggal}
+          onChange={handleDateInput}
+          maxLength={10} // Untuk memastikan format tidak melebihi dd/MM/yyyy
+          className="peer w-full border-2 border-darkgreen rounded-xl p-4 pt-6 focus:outline-none focus:ring-2 focus:ring-darkgreen text-darkgreen placeholder:opacity-0 font-poppins font-semibold "
+          placeholder="DD/MM/YYYY"
+          required
+        />
+        {/* Floating Label */}
+        <label
+          htmlFor="tanggal"
+          className="absolute left-4 top-0 text-darkgreen text-sm font-extrabold font-poppins transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-sm peer-focus:text-green-700 "
+        >
+          TANGGAL
+        </label>
+      </div>
+
+
+      {/* Pukul Field */}
+      <div className="relative mb-6">
         <input
           id="pukul"
           name="pukul"
           type="time"
           value={formData.pukul}
           onChange={handleChange}
-          className="w-full border border-darkgreen rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-green-400 placeholder:text-darkgreen font-poppins text-center font-semibold"
+          className="peer w-full border border-darkgreen border-2 rounded-xl p-4 pt-6 focus:outline-none focus:ring-2 focus:ring-darkgreen text-green-900 placeholder-transparent font-poppins font-semibold"
           required
         />
+        {/* Floating Label */}
+        <label
+          htmlFor="pukul"
+          className="absolute left-4 top-2 text-darkgreen font-extrabold font-poppins  text-sm transition-all peer-placeholder-shown:top-6 peer-placeholder-shown:text-base peer-placeholder-shown:text-gray-500 peer-focus:top-2 peer-focus:text-sm peer-focus:text-green-700"
+        >
+          PUKUL
+        </label>
       </div>
+
+      {/* Buttons */}
       <button
         type="button"
         onClick={(e) => handleSubmit(e, "OK")}
-        className="w-full bg-darkgreen text-white rounded-2xl py-2 mt-4 hover:bg-darkgreen hover:opacity-80 font-semibold font-poppins"
+        className="w-full bg-darkgreen text-white text-lg font-bold rounded-full py-3 mt-4 hover:opacity-90 transition duration-200"
       >
-        Accept
+        Scan Susu
       </button>
       <button
         type="button"
         onClick={(e) => handleSubmit(e, "Rejected")}
-        className="w-full bg-red text-white rounded-2xl py-2 mt-4 font-semibold font-poppins"
+        className="w-full bg-red text-white text-lg font-bold rounded-full py-3 mt-4 hover:opacity-90 transition duration-200"
       >
-        Reject
+        REJECT?
       </button>
     </form>
   );
