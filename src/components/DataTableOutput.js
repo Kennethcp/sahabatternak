@@ -1,13 +1,40 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import DatePicker from "./DatePicker";
+import { supabase } from "../lib/supabaseClient";
+import { format } from 'date-fns';
 
-const DataTableOutput = ({ data }) => {
+const DataTableOutput = () => {
   const [selectedDate, setSelectedDate] = useState(new Date());
   const [isDatePickerOpen, setIsDatePickerOpen] = useState(false);
+  const [data, setData] = useState([]);
+
+  useEffect(() => {
+    const fetchDataForDate = async (date) => {
+      try {
+        const formattedDate = format(date, 'yyyy-MM-dd');
+        console.log('Fetching data for date:', formattedDate);
+        const { data: fetchedData, error } = await supabase
+          .from('data_entries')
+          .select('*')
+          .eq('tanggal', formattedDate);
+
+        if (error) {
+          console.error('Error fetching data:', error);
+        } else {
+          console.log('Data fetched:', fetchedData);
+          setData(fetchedData || []);
+        }
+      } catch (error) {
+        console.error('Error:', error);
+      }
+    };
+
+    fetchDataForDate(selectedDate);
+  }, [selectedDate]);
 
   const handleDateChange = (date) => {
     setSelectedDate(date);
-    setIsDatePickerOpen(false); // Close the DatePicker after date selection
+    setIsDatePickerOpen(false);
   };
 
   return (
@@ -58,22 +85,20 @@ const DataTableOutput = ({ data }) => {
         </thead>
         <tbody>
           {data.length > 0 ? (
-            data.map((item, index) => (
-              <tr
-                key={index}
-                className="text-center even:bg-white odd:bg-lightgrey"
-              >
-                <td className="border-darkgreen p-2 border-2">{item.kode}</td>
-                <td className="border-darkgreen p-2 border-2">{item.pukul}</td>
-                <td className="border-darkgreen p-2 border-2">
-                  {item.nama_pekerja}
-                </td>
-                <td className="border-darkgreen p-2 border-2">{item.supplier}</td>
-                <td className="border-darkgreen p-2 border-2">
-                  {item.jumlah}
-                </td>
-              </tr>
-            ))
+            data
+              .filter(item => item.nama_pekerja !== null && item.pukul !== null) // Filter out rows where both are null
+              .map((item, index) => (
+                <tr
+                  key={index}
+                  className="text-center even:bg-white odd:bg-lightgrey"
+                >
+                  <td className="border-darkgreen p-2 border-2">{item.kode}</td>
+                  <td className="border-darkgreen p-2 border-2">{item.pukul}</td>
+                  <td className="border-darkgreen p-2 border-2">{item.nama_pekerja}</td>
+                  <td className="border-darkgreen p-2 border-2">{item.supplier}</td>
+                  <td className="border-darkgreen p-2 border-2">{item.jumlah}</td>
+                </tr>
+              ))
           ) : (
             <tr>
               <td
