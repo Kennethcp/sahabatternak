@@ -145,8 +145,8 @@ const DashboardSupplier = () => {
                   <span className="text-darkgreen font-medium">{supplier.name}</span>
                 </div>
                 {hoveredSupplier?.rank === supplier.rank && (
-                  <div className="absolute left-20 top-[-100px] bg-white border-2 border-darkgreen rounded-lg shadow-lg p-6 w-[300px] z-10 bg-opacity-10 backdrop-blur font-poppins">
-                    <h3 className="text-center font-bold text-darkgreen text-xl mb-4">
+                  <div className="absolute left-20 top-[-100px] bg-white border-2 border-darkgreen rounded-[42px] shadow-lg p-6 w-[351px] z-10 bg-opacity-80 backdrop-blur font-poppins">
+                    <h3 className="text-center font-bold text-greentext text-xl mb-4">
                       {supplier.name}
                     </h3>
                     <div className="grid grid-cols-2 gap-4 text-center">

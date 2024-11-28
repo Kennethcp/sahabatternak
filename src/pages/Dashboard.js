@@ -1,13 +1,16 @@
 import React from "react";
 import avatar from "../assets/logo_ibu.svg";
 import milk from "../assets/milk.svg";
-import Header from "../components/Header";
+import logo from "../assets/logo.svg";
 import { Link } from "react-router-dom";
 
 const Dashboard = () => {
   return (
     <div className="min-h-screen flex flex-col items-center">
-      <Header/>
+      <header className="text-center w-full flex items-center bg-gradient-to-r from-lightgreen to-green text-greentext font-extrabold h-[138px]">
+        <img src={logo} className="px-10 pr-10 w-40"></img>
+        <h1 className="text-4xl font-bold pl-14">DASHBOARD CV. SAHABAT TERNAK</h1>
+      </header>
 
       {/* Main Content */}
       <div className="flex flex-col items-center mt-10">

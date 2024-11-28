@@ -78,7 +78,7 @@ const OutputForm = ({ onSubmit, closeForm }) => {
         onSubmit={handleSubmit}
       >
         <div className="text-center">
-          <p className="text-darkgreen font-semibold mb-4">Silakan Pilih Pengambil</p>
+          <p className="text-greentext font-semibold mb-4 ">Silakan Pilih Pengambil</p>
           <div className="flex justify-around">
             {characters.map((character) => (
               <button

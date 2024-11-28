@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import DataTable from "../components/DataTableOutput";
-import Header from "../components/Header";
+import logo from "../assets/logo.svg";
 import OutputForm from "../components/OutputForm.js";
 import { supabase } from "../lib/supabaseClient";
 
@@ -60,15 +60,18 @@ const Output = () => {
 
   return (
     <div className="min-h-screen flex flex-col bg-green-50 relative">
-      <Header />
+      <header className="text-center w-full flex items-center bg-gradient-to-r from-lightgreen to-green text-greentext font-extrabold h-[138px]">
+        <img src={logo} className="px-10 pr-10 w-40"></img>
+        <h1 className="text-4xl font-bold pl-14">SISTEM OUTPUT SUSU CV. SAHABAT TERNAK</h1>
+      </header>
       <main className="flex flex-col lg:flex-row w-full max-w-6xl mx-auto mt-6 px-4 flex-1">
         <div className="w-full lg:w-2/3 p-4">
           <DataTable data={data} />
         </div>
         <div className="w-full lg:w-1/3 p-4 flex flex-col justify-between relative">
-          <div className="bg-darkgreen text-white rounded-lg px-6 py-4 text-center mb-6">
-            <h2 className="text-sm font-medium">TOTAL PRODUKSI</h2>
-            <p className="text-4xl font-bold mt-2">{totalDiolah} liter</p>
+          <div className="bg-darkgreen text-white rounded-[18px] px-6 py-2 text-center mb-6 font-poppins">
+            <h2 className="text-[18px] font-extrabold">TOTAL PRODUKSI</h2>
+            <p className="text-[86px] font-bold mt-2">{totalDiolah}<span className="font-poppins text-[61px] font-normal"> liter </span> </p> 
           </div>
           <button
             onClick={() => setShowForm(true)}
