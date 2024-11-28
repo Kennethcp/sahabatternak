@@ -46,9 +46,9 @@ const DataTable = ({ data }) => {
           <tr className="bg-white">
             <th className="border-r-0 p-2 border-2">Kode</th>
             <th className="border-x-0  p-2 border-2">Pukul</th>
-            <th className="border-x-0 p-2 border-2">Nama Pekerja</th>
-            <th className="border-x-0  p-2 border-2">Supplier</th>
-            <th className="border-l-0  p-2 border-2">Jumlah</th>
+            <th className="border-x-0 p-2 border-2">Supplier</th>
+            <th className="border-x-0  p-2 border-2">Jumlah</th>
+            <th className="border-l-0  p-2 border-2">Kualitas</th>
           </tr>
         </thead>
         <tbody>

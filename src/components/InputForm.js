@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import { supabase } from "../lib/supabaseClient"; // Import the initialized Supabase client
 
 const InputForm = ({ addData }) => {
   const [formData, setFormData] = useState({
@@ -7,29 +8,46 @@ const InputForm = ({ addData }) => {
     jumlah: "",
     tanggal: "",
     pukul: "",
-    kualitas: "OK", // Reset status to default
+    kualitas: "OK", // Default quality value
   });
 
   const handleChange = (e) => {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
-  const handleSubmit = (e, status) => {
+  const handleSubmit = async (e, status) => {
     e.preventDefault();
+
     if (Object.values(formData).every((field) => field.trim() !== "")) {
       const updatedData = { ...formData, status };
-      if (status === "Rejected") {
-        updatedData.kualitas = "Hijau"; // Adjust kualitas for rejected
+
+      try {
+        // Insert data directly into Supabase table
+        const { data, error } = await supabase
+          .from("data_entries") // Replace with your table name
+          .insert([updatedData]);
+
+        if (error) {
+          throw new Error(error.message);
+        }
+
+        console.log("Data submitted:", data);
+
+        // Reset form after successful submission
+        setFormData({
+          kode: "",
+          supplier: "",
+          jumlah: "",
+          tanggal: "",
+          pukul: "",
+          kualitas: "OK",
+        });
+
+        // Notify parent component
+        addData(updatedData);
+      } catch (error) {
+        console.error("Error submitting data:", error.message);
       }
-      addData(updatedData);
-      setFormData({
-        kode: "",
-        supplier: "",
-        jumlah: "",
-        tanggal: "",
-        pukul: "",
-        kualitas: "OK", // Reset kualitas to default
-      });
     }
   };
 
@@ -37,7 +55,7 @@ const InputForm = ({ addData }) => {
 
   return (
     <form className="w-full max-w-md bg-white p-6">
-      {["kode", "supplier", "jumlah", "tanggal", "pukul"].map((field) => (
+      {["kode", "supplier", "jumlah", "tanggal"].map((field) => (
         <div key={field} className="mb-4">
           <input
             id={field}
@@ -51,6 +69,17 @@ const InputForm = ({ addData }) => {
           />
         </div>
       ))}
+      <div className="mb-4">
+        <input
+          id="pukul"
+          name="pukul"
+          type="time" // Change input type to "time"
+          value={formData.pukul}
+          onChange={handleChange}
+          className="w-full border border-darkgreen rounded-xl p-2 focus:outline-none focus:ring-2 focus:ring-green-400 placeholder:text-darkgreen font-poppins text-center font-semibold"
+          required
+        />
+      </div>
       <button
         type="button"
         onClick={(e) => handleSubmit(e, "OK")} // Pass "OK" status
