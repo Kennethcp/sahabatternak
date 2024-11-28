@@ -4,17 +4,17 @@ import graph from "../assets/Graph.svg";
 import { format } from "date-fns";
 import DatePicker from "../components/DatePicker";
 
-
 const DashboardSupplier = () => {
   const stats = [
     { label: "Jumlah Susu Diolah", value: "300", unit: "liter" },
     { label: "Hasil Produksi", value: "155.4", unit: "kg" },
     { label: "Rata-rata Conversion Rate", value: "0.518", unit: "kg/l" },
   ];
-    const [startDate, setStartDate] = useState(new Date(2024, 10, 11)); // Default: 11 November 2024
-    const [endDate, setEndDate] = useState(new Date(2024, 10, 12)); // Default: 12 November 2024
-    const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState(false);
-    const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState(false);
+
+  const [startDate, setStartDate] = useState(new Date(2024, 10, 11)); // Default: 11 November 2024
+  const [endDate, setEndDate] = useState(new Date(2024, 10, 12)); // Default: 12 November 2024
+  const [isStartDatePickerOpen, setIsStartDatePickerOpen] = useState(false);
+  const [isEndDatePickerOpen, setIsEndDatePickerOpen] = useState(false);
 
   const suppliers = [
     {
@@ -54,8 +54,8 @@ const DashboardSupplier = () => {
         <h1 className="text-4xl font-bold pl-14">DASHBOARD SUPPLIER CV. SAHABAT TERNAK</h1>
       </header>
 
-     {/* Periode Section */}
-     <div className="text-center mt-4">
+      {/* Periode Section */}
+      <div className="text-center mt-4">
         <h1 className="font-poppins font-bold text-[31px] text-greentext">Periode</h1>
         <div className="flex justify-center items-center gap-6 mt-2">
           <div>
@@ -68,7 +68,14 @@ const DashboardSupplier = () => {
             {isStartDatePickerOpen && (
               <DatePicker
                 selectedDate={startDate}
-                onDateSelect={(date) => setStartDate(date)}
+                onDateSelect={(date) => {
+                  if (date <= endDate) {
+                    setStartDate(date);
+                  } else {
+                    alert("Tanggal mulai tidak boleh lebih besar dari tanggal akhir");
+                  }
+                  setIsStartDatePickerOpen(false);
+                }}
                 onClose={() => setIsStartDatePickerOpen(false)}
               />
             )}
@@ -84,7 +91,14 @@ const DashboardSupplier = () => {
             {isEndDatePickerOpen && (
               <DatePicker
                 selectedDate={endDate}
-                onDateSelect={(date) => setEndDate(date)}
+                onDateSelect={(date) => {
+                  if (date >= startDate) {
+                    setEndDate(date);
+                  } else {
+                    alert("Tanggal akhir tidak boleh lebih kecil dari tanggal mulai");
+                  }
+                  setIsEndDatePickerOpen(false);
+                }}
                 onClose={() => setIsEndDatePickerOpen(false)}
               />
             )}
@@ -97,7 +111,7 @@ const DashboardSupplier = () => {
         {/* Left Section: Chart */}
         <div className="col-span-3 bg-white p-6 rounded-lg">
           <div className="rounded-lg flex items-center justify-center">
-            <img src={graph}></img>
+            <img src={graph} alt="Graph" />
           </div>
         </div>
 

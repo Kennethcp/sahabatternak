@@ -1,8 +1,10 @@
 import React, { useState } from 'react';
 import { format, addMonths, subMonths } from 'date-fns';
 
-const DatePicker = ({ selectedDate, onDateSelect, onClose }) => {
+const DatePicker = ({ selectedDate, onDateSelect, onDateRangeSelect, onClose }) => {
   const [currentMonth, setCurrentMonth] = useState(selectedDate || new Date());
+  const [rangeStart, setRangeStart] = useState(null);
+  const [rangeEnd, setRangeEnd] = useState(null);
 
   const daysInMonth = Array.from(
     { length: new Date(currentMonth.getFullYear(), currentMonth.getMonth() + 1, 0).getDate() },
@@ -13,9 +15,34 @@ const DatePicker = ({ selectedDate, onDateSelect, onClose }) => {
   const handlePrevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
 
   const handleDateClick = (day) => {
-    const newDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
-    onDateSelect(newDate);
-    onClose(); // Close the calendar after a date is selected
+    const clickedDate = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+
+    if (onDateRangeSelect) {
+      // Handle range selection
+      if (!rangeStart || (rangeStart && rangeEnd)) {
+        setRangeStart(clickedDate);
+        setRangeEnd(null);
+      } else {
+        setRangeEnd(clickedDate);
+        onDateRangeSelect(rangeStart, clickedDate);
+        onClose();
+      }
+    } else {
+      // Handle single date selection
+      onDateSelect(clickedDate);
+      onClose();
+    }
+  };
+
+  const isSelected = (day) => {
+    const date = new Date(currentMonth.getFullYear(), currentMonth.getMonth(), day);
+    if (rangeStart && rangeEnd) {
+      return date >= rangeStart && date <= rangeEnd;
+    }
+    if (rangeStart) {
+      return +date === +rangeStart;
+    }
+    return false;
   };
 
   return (
@@ -64,7 +91,9 @@ const DatePicker = ({ selectedDate, onDateSelect, onClose }) => {
           {daysInMonth.map((day) => (
             <div
               key={day}
-              className="w-8 h-8 flex items-center justify-center bg-greentext text-white rounded-md font-poppins cursor-pointer hover:bg-darkgreen"
+              className={`w-8 h-8 flex items-center justify-center rounded-md font-poppins cursor-pointer hover:bg-darkgreen ${
+                isSelected(day) ? 'bg-darkgreen text-white' : 'bg-greentext text-white'
+              }`}
               onClick={() => handleDateClick(day)}
             >
               {day}

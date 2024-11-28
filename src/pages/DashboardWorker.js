@@ -54,8 +54,8 @@ const DashboardWorker = () => {
         <h1 className="text-4xl font-bold pl-14">DASHBOARD WORKER CV. SAHABAT TERNAK</h1>
       </header>
 
-     {/* Periode Section */}
-     <div className="text-center mt-4">
+       {/* Periode Section */}
+       <div className="text-center mt-4">
         <h1 className="font-poppins font-bold text-[31px] text-greentext">Periode</h1>
         <div className="flex justify-center items-center gap-6 mt-2">
           <div>
@@ -68,7 +68,14 @@ const DashboardWorker = () => {
             {isStartDatePickerOpen && (
               <DatePicker
                 selectedDate={startDate}
-                onDateSelect={(date) => setStartDate(date)}
+                onDateSelect={(date) => {
+                  if (date <= endDate) {
+                    setStartDate(date);
+                  } else {
+                    alert("Tanggal mulai tidak boleh lebih besar dari tanggal akhir");
+                  }
+                  setIsStartDatePickerOpen(false);
+                }}
                 onClose={() => setIsStartDatePickerOpen(false)}
               />
             )}
@@ -84,7 +91,14 @@ const DashboardWorker = () => {
             {isEndDatePickerOpen && (
               <DatePicker
                 selectedDate={endDate}
-                onDateSelect={(date) => setEndDate(date)}
+                onDateSelect={(date) => {
+                  if (date >= startDate) {
+                    setEndDate(date);
+                  } else {
+                    alert("Tanggal akhir tidak boleh lebih kecil dari tanggal mulai");
+                  }
+                  setIsEndDatePickerOpen(false);
+                }}
                 onClose={() => setIsEndDatePickerOpen(false)}
               />
             )}
